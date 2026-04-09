@@ -1,0 +1,108 @@
+import Foundation
+
+struct Credentials: Encodable {
+    let email: String
+    let password: String
+}
+
+struct UserInfo: Codable {
+    let id: Int
+    let email: String
+    let phoneNumber: String?
+    let registrationDate: String?
+    let isActive: Bool?
+}
+
+struct UserSession: Codable {
+    let token: String
+    let user: UserInfo
+}
+
+struct UserDevices: Decodable {
+    let userId: String
+    let zones: [Zone]
+}
+
+struct Zone: Decodable, Identifiable {
+    let id: Int
+    let name: String
+    let devices: [Device]
+}
+
+struct Device: Decodable, Identifiable, Equatable {
+    let id: String
+    let name: String
+    let label: String
+    let color: String?
+    let phoneNumber: String?
+    let deviceKey: String
+}
+
+enum GateArea: String, CaseIterable, Identifiable {
+    case courtyard
+    case parking
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .courtyard:
+            return "Двор"
+        case .parking:
+            return "Паркинг"
+        }
+    }
+}
+
+enum GateDirection: Hashable {
+    case enter
+    case exit
+}
+
+struct GateAction: Equatable {
+    let direction: GateDirection
+    let device: Device
+}
+
+struct GateSection: Identifiable, Equatable {
+    let area: GateArea
+    let actions: [GateDirection: GateAction]
+
+    var id: GateArea { area }
+    var title: String { area.title }
+}
+
+struct APIErrorResponse: Decodable {
+    let error: String?
+    let message: String?
+}
+
+struct AppAlert: Identifiable {
+    let id = UUID()
+    let title: String
+    let message: String
+}
+
+enum APIError: LocalizedError {
+    case invalidBaseURL
+    case invalidResponse
+    case unauthorized
+    case serverError(String)
+    case transport(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidBaseURL:
+            return "Некорректный URL backend."
+        case .invalidResponse:
+            return "Сервер вернул неожиданный ответ."
+        case .unauthorized:
+            return "Сессия истекла. Выполните вход повторно."
+        case let .serverError(message):
+            return message
+        case let .transport(message):
+            return message
+        }
+    }
+}
+
