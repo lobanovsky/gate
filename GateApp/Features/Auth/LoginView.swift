@@ -10,10 +10,13 @@ struct LoginView: View {
             Spacer()
 
             VStack(spacing: 12) {
-                Text("Gate")
+                Text("17-й проезд Марьиной Рощи, 1")
                     .font(.system(size: 34, weight: .bold))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.8)
 
-                Text("Управление шлагбаумами и воротами")
+                Text("Управление шлагбаумами и воротами с любовью к деталям")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -68,4 +71,3 @@ struct LoginView: View {
         )
     }
 }
-
