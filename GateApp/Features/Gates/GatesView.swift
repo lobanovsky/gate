@@ -14,7 +14,12 @@ struct GatesView: View {
                         ForEach(appModel.sections) { section in
                             GateSectionCard(
                                 section: section,
-                                isBusy: appModel.isBusy,
+                                titleForDirection: { direction in
+                                    appModel.buttonTitle(area: section.area, direction: direction)
+                                },
+                                isDisabled: { direction, hasDevice in
+                                    appModel.isActionDisabled(area: section.area, direction: direction, hasDevice: hasDevice)
+                                },
                                 onTap: { direction in
                                     Task {
                                         await appModel.open(section: section.area, direction: direction)
@@ -30,12 +35,18 @@ struct GatesView: View {
             .scrollBounceBehavior(.basedOnSize)
         }
         .background(Color(.systemGroupedBackground))
-        .navigationTitle("Управление")
+        .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
                 Button("Выйти") {
                     appModel.logout()
                 }
+            }
+
+            ToolbarItem(placement: .principal) {
+                Link("Сделано в Бюро Лобановского", destination: URL(string: "https://www.lobanovsky.ru")!)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
             }
 
             ToolbarItem(placement: .topBarTrailing) {

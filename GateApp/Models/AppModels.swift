@@ -72,6 +72,11 @@ struct GateSection: Identifiable, Equatable {
     var title: String { area.title }
 }
 
+struct GateActionID: Hashable {
+    let area: GateArea
+    let direction: GateDirection
+}
+
 struct APIErrorResponse: Decodable {
     let error: String?
     let message: String?

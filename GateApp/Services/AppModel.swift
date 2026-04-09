@@ -8,6 +8,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var isAuthenticated = false
     @Published private(set) var sections: [GateSection] = []
     @Published var alert: AppAlert?
+    @Published private var inFlightAction: GateActionID?
+    @Published private var cooldownActions: Set<GateActionID> = []
 
     private let apiClient: APIClient
     private let storage: UserDefaults
@@ -66,21 +68,33 @@ final class AppModel: ObservableObject {
     }
 
     func open(section area: GateArea, direction: GateDirection) async {
+        let actionID = GateActionID(area: area, direction: direction)
+
         guard
             let session,
             let userDevices,
-            let action = sections.first(where: { $0.area == area })?.actions[direction]
+            let action = sections.first(where: { $0.area == area })?.actions[direction],
+            inFlightAction == nil,
+            !cooldownActions.contains(actionID)
         else {
             return
         }
 
         isBusy = true
+        inFlightAction = actionID
         defer { isBusy = false }
 
         do {
             try await apiClient.open(device: action.device, userId: userDevices.userId, token: session.token)
-            alert = AppAlert(title: "Готово", message: "Команда отправлена: \(area.title) / \(direction.title)")
+            inFlightAction = nil
+            cooldownActions.insert(actionID)
+
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(2))
+                self.cooldownActions.remove(actionID)
+            }
         } catch {
+            inFlightAction = nil
             handleAuthorizedError(error, fallbackTitle: "Не удалось выполнить команду")
         }
     }
@@ -96,6 +110,25 @@ final class AppModel: ObservableObject {
     private func persistSession(_ session: UserSession) throws {
         let data = try JSONEncoder().encode(session)
         storage.set(data, forKey: sessionKey)
+    }
+
+    func buttonTitle(area: GateArea, direction: GateDirection) -> String {
+        let actionID = GateActionID(area: area, direction: direction)
+        if inFlightAction == actionID || cooldownActions.contains(actionID) {
+            return "Открываем..."
+        }
+
+        switch direction {
+        case .enter:
+            return "Заехать"
+        case .exit:
+            return "Выехать"
+        }
+    }
+
+    func isActionDisabled(area: GateArea, direction: GateDirection, hasDevice: Bool) -> Bool {
+        let actionID = GateActionID(area: area, direction: direction)
+        return !hasDevice || inFlightAction == actionID || cooldownActions.contains(actionID)
     }
 
     private func handleAuthorizedError(_ error: Error, fallbackTitle: String) {

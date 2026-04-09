@@ -2,7 +2,8 @@ import SwiftUI
 
 struct GateSectionCard: View {
     let section: GateSection
-    let isBusy: Bool
+    let titleForDirection: (GateDirection) -> String
+    let isDisabled: (GateDirection, Bool) -> Bool
     let onTap: (GateDirection) -> Void
 
     var body: some View {
@@ -11,8 +12,8 @@ struct GateSectionCard: View {
                 .font(.title3.weight(.semibold))
 
             VStack(spacing: 12) {
-                actionButton(direction: .enter, title: "Заехать")
-                actionButton(direction: .exit, title: "Выехать")
+                actionButton(direction: .enter)
+                actionButton(direction: .exit)
             }
         }
         .padding(18)
@@ -20,14 +21,15 @@ struct GateSectionCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
     }
 
-    private func actionButton(direction: GateDirection, title: String) -> some View {
+    private func actionButton(direction: GateDirection) -> some View {
         let action = section.actions[direction]
+        let isButtonDisabled = isDisabled(direction, action != nil)
 
         return Button {
             onTap(direction)
         } label: {
             HStack {
-                Text(title)
+                Text(titleForDirection(direction))
                     .font(.headline)
 
                 Spacer()
@@ -38,13 +40,14 @@ struct GateSectionCard: View {
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 18)
             .padding(.vertical, 20)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .foregroundStyle(.white)
         .background(backgroundColor(for: direction))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .disabled(isBusy || action == nil)
-        .opacity(action == nil ? 0.55 : 1.0)
+        .disabled(isButtonDisabled)
+        .opacity(isButtonDisabled && action == nil ? 0.55 : (isButtonDisabled ? 0.72 : 1.0))
     }
 
     private func backgroundColor(for direction: GateDirection) -> Color {
