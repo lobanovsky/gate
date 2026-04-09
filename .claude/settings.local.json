@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" https://gate-backend.housekpr.ru/api/auth/login --max-time 5)",
+      "Bash(plutil -p ~/Library/Developer/Xcode/DerivedData/GateApp-ffgytrtqtgwwofhcdxvxqnkdokwo/Build/Products/Debug-iphonesimulator/Gate.app/Info.plist)"
+    ]
+  }
+}

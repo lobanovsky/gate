@@ -39,8 +39,8 @@ struct Device: Decodable, Identifiable, Equatable {
 }
 
 enum GateArea: String, CaseIterable, Identifiable {
-    case courtyard
     case parking
+    case courtyard
 
     var id: String { rawValue }
 
@@ -105,4 +105,3 @@ enum APIError: LocalizedError {
         }
     }
 }
-

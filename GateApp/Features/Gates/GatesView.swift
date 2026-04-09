@@ -6,8 +6,6 @@ struct GatesView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                header
-
                 if appModel.isLoadingDevices && appModel.sections.isEmpty {
                     ProgressView("Загружаем устройства")
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -56,16 +54,4 @@ struct GatesView: View {
             await appModel.loadDevices()
         }
     }
-
-    private var header: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Быстрый доступ")
-                .font(.system(size: 28, weight: .bold))
-
-            Text("Две зоны и четыре действия. Кнопки привязываются к устройствам, загруженным из backend.")
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-        }
-    }
 }
-

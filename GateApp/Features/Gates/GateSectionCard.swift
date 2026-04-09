@@ -27,15 +27,8 @@ struct GateSectionCard: View {
             onTap(direction)
         } label: {
             HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(title)
-                        .font(.headline)
-
-                    Text(action?.device.label ?? "Устройство не найдено")
-                        .font(.footnote)
-                        .foregroundStyle(.white.opacity(0.88))
-                        .multilineTextAlignment(.leading)
-                }
+                Text(title)
+                    .font(.headline)
 
                 Spacer()
 
@@ -67,4 +60,3 @@ struct GateSectionCard: View {
         }
     }
 }
-

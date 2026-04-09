@@ -9,7 +9,7 @@ enum AppConfiguration {
             return nil
         }
 
-        return URL(string: rawValue)
+        return URL(string: "https://\(rawValue)")
     }
 }
 
