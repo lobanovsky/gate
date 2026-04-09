@@ -48,15 +48,11 @@ struct GateSectionCard: View {
     }
 
     private func backgroundColor(for direction: GateDirection) -> Color {
-        switch (section.area, direction) {
-        case (.courtyard, .enter):
-            return Color(red: 0.08, green: 0.49, blue: 0.83)
-        case (.courtyard, .exit):
-            return Color(red: 0.16, green: 0.64, blue: 0.49)
-        case (.parking, .enter):
-            return Color(red: 0.94, green: 0.53, blue: 0.15)
-        case (.parking, .exit):
-            return Color(red: 0.82, green: 0.28, blue: 0.29)
+        switch direction {
+        case .enter:
+            return Color(red: 0.66, green: 0.86, blue: 0.61)
+        case .exit:
+            return Color(red: 0.63, green: 0.82, blue: 0.95)
         }
     }
 }
