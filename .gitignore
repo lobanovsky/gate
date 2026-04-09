@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+
+# Xcode user state
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Build artifacts
+DerivedData/
+build/
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+
+# Provisioning and signing secrets
+*.mobileprovision
+*.p12
+*.cer
+
+# Archives and exported apps
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcarchive
+
+# Local environment overrides
+.env.local

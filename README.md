@@ -35,7 +35,7 @@ GateApp/
 Измените значение:
 
 ```xcconfig
-BACKEND_BASE_URL = https://gate-backend.housekpr.ru
+BACKEND_BASE_URL = https\\://gate-backend.housekpr.ru
 ```
 
 ## Запуск
