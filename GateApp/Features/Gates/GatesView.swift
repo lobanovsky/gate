@@ -4,27 +4,30 @@ struct GatesView: View {
     @EnvironmentObject private var appModel: AppModel
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                if appModel.isLoadingDevices && appModel.sections.isEmpty {
-                    ProgressView("Загружаем устройства")
-                        .frame(maxWidth: .infinity, alignment: .center)
-                        .padding(.top, 40)
-                } else {
-                    ForEach(appModel.sections) { section in
-                        GateSectionCard(
-                            section: section,
-                            isBusy: appModel.isBusy,
-                            onTap: { direction in
-                                Task {
-                                    await appModel.open(section: section.area, direction: direction)
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 40) {
+                    if appModel.isLoadingDevices && appModel.sections.isEmpty {
+                        ProgressView("Загружаем устройства")
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else {
+                        ForEach(appModel.sections) { section in
+                            GateSectionCard(
+                                section: section,
+                                isBusy: appModel.isBusy,
+                                onTap: { direction in
+                                    Task {
+                                        await appModel.open(section: section.area, direction: direction)
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
+                .frame(minHeight: geometry.size.height, alignment: .center)
+                .padding(20)
             }
-            .padding(20)
+            .scrollBounceBehavior(.basedOnSize)
         }
         .background(Color(.systemGroupedBackground))
         .navigationTitle("Управление")
