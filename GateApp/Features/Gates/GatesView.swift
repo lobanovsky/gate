@@ -18,6 +18,9 @@ struct GatesView: View {
                                 titleForDirection: { direction in
                                     appModel.buttonTitle(area: section.area, direction: direction)
                                 },
+                                isInProgress: { direction in
+                                    appModel.isActionInProgress(area: section.area, direction: direction)
+                                },
                                 isDisabled: { direction, hasDevice in
                                     appModel.isActionDisabled(area: section.area, direction: direction, hasDevice: hasDevice)
                                 },

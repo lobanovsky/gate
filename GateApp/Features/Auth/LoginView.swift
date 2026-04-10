@@ -82,6 +82,29 @@ struct LoginView: View {
             .buttonStyle(.borderedProminent)
             .disabled(appModel.isBusy || !isValidEmail(email) || password.isEmpty)
 
+            if let biometricOption = appModel.biometricOption {
+                Button {
+                    Task {
+                        _ = await appModel.loginWithBiometrics()
+                    }
+                } label: {
+                    HStack {
+                        if appModel.isBusy {
+                            ProgressView()
+                                .tint(.blue)
+                        } else {
+                            Image(systemName: biometricOption.iconName)
+                        }
+                        Text(biometricOption.buttonTitle)
+                            .fontWeight(.semibold)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                }
+                .buttonStyle(.bordered)
+                .disabled(appModel.isBusy)
+            }
+
             HStack {
                 Button("Регистрация") {
                     registrationEmail = email
