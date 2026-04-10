@@ -209,7 +209,7 @@ final class AppModel: ObservableObject {
     func buttonTitle(area: GateArea, direction: GateDirection) -> String {
         let actionID = GateActionID(area: area, direction: direction)
         if inFlightAction == actionID || cooldownActions.contains(actionID) {
-            return "Выполняем..."
+            return "Ждите..."
         }
 
         switch direction {

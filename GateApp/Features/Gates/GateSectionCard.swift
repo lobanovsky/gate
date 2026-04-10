@@ -27,14 +27,15 @@ struct GateSectionCard: View {
         let action = section.actions[direction]
         let isButtonDisabled = isDisabled(direction, action != nil)
         let isProgressVisible = isInProgress(direction)
+        let buttonHeight: CGFloat = 90
 
         return HStack(spacing: 14) {
             Button {
                 onCall(direction)
             } label: {
                 Image(systemName: "phone.fill")
-                    .font(.system(size: 24, weight: .bold))
-                    .frame(width: 74, height: 78)
+                    .font(.system(size: 28, weight: .bold))
+                    .frame(width: buttonHeight, height: buttonHeight)
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
@@ -48,6 +49,8 @@ struct GateSectionCard: View {
                 HStack {
                     Text(titleForDirection(direction))
                         .font(.system(size: 22, weight: .bold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.9)
 
                     Spacer()
 
@@ -65,10 +68,10 @@ struct GateSectionCard: View {
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(.horizontal, 22)
-                .padding(.vertical, 26)
+                .frame(minHeight: buttonHeight)
                 .contentShape(Rectangle())
             }
-            .frame(maxWidth: .infinity, minHeight: 78)
+            .frame(maxWidth: .infinity, minHeight: buttonHeight)
             .buttonStyle(.plain)
             .foregroundStyle(.white)
             .background(buttonFillColor(for: direction, isProgressVisible: isProgressVisible, isUnavailable: isButtonDisabled && action == nil))
