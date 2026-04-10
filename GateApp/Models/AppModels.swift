@@ -5,6 +5,15 @@ struct Credentials: Encodable {
     let password: String
 }
 
+struct RegistrationPayload: Encodable {
+    let email: String
+    let phoneNumber: String
+}
+
+struct RecoverPasswordPayload: Encodable {
+    let email: String
+}
+
 struct UserInfo: Codable {
     let id: Int
     let email: String
@@ -16,6 +25,16 @@ struct UserInfo: Codable {
 struct UserSession: Codable {
     let token: String
     let user: UserInfo
+}
+
+struct RegistrationResponse: Decodable {
+    let message: String?
+    let password: String
+    let user: UserInfo
+}
+
+struct MessageResponse: Decodable {
+    let message: String?
 }
 
 struct UserDevices: Decodable {

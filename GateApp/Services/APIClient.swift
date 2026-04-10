@@ -17,6 +17,26 @@ struct APIClient {
         )
     }
 
+    func register(payload: RegistrationPayload) async throws -> RegistrationResponse {
+        try await request(
+            path: "/api/auth/register",
+            method: "POST",
+            body: payload,
+            token: nil,
+            responseType: RegistrationResponse.self
+        )
+    }
+
+    func recoverPassword(email: String) async throws -> MessageResponse {
+        try await request(
+            path: "/api/auth/recover-password",
+            method: "POST",
+            body: RecoverPasswordPayload(email: email),
+            token: nil,
+            responseType: MessageResponse.self
+        )
+    }
+
     func fetchDevices(token: String) async throws -> UserDevices {
         try await request(
             path: "/api/private/devices",
@@ -102,4 +122,3 @@ struct APIClient {
 }
 
 private struct EmptyResponse: Decodable {}
-

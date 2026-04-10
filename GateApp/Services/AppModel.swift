@@ -35,20 +35,55 @@ final class AppModel: ObservableObject {
         }
     }
 
-    func login(email: String, password: String) async {
-        guard !email.isEmpty, !password.isEmpty else { return }
+    func login(email: String, password: String) async -> Bool {
+        guard !email.isEmpty, !password.isEmpty else { return false }
 
         isBusy = true
         defer { isBusy = false }
 
         do {
             let userSession = try await apiClient.login(credentials: Credentials(email: email, password: password))
-            session = userSession
-            isAuthenticated = true
-            try persistSession(userSession)
+            try applySession(userSession)
             await loadDevices()
+            return true
         } catch {
             present(error: error, title: "Не удалось войти")
+            return false
+        }
+    }
+
+    func register(email: String, phoneNumber: String) async -> Bool {
+        guard !email.isEmpty, !phoneNumber.isEmpty else { return false }
+
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            let response = try await apiClient.register(payload: RegistrationPayload(email: email, phoneNumber: phoneNumber))
+            let userSession = try await apiClient.login(credentials: Credentials(email: email, password: response.password))
+            try applySession(userSession)
+            await loadDevices()
+            return true
+        } catch {
+            present(error: error, title: "Не удалось зарегистрироваться")
+            return false
+        }
+    }
+
+    func recoverPassword(email: String) async -> Bool {
+        guard !email.isEmpty else { return false }
+
+        isBusy = true
+        defer { isBusy = false }
+
+        do {
+            let response = try await apiClient.recoverPassword(email: email)
+            let message = response.message ?? "Пароль отправлен на \"\(email)\""
+            alert = AppAlert(title: "Готово", message: message)
+            return true
+        } catch {
+            present(error: error, title: "Не удалось восстановить пароль")
+            return false
         }
     }
 
@@ -110,6 +145,12 @@ final class AppModel: ObservableObject {
     private func persistSession(_ session: UserSession) throws {
         let data = try JSONEncoder().encode(session)
         storage.set(data, forKey: sessionKey)
+    }
+
+    private func applySession(_ session: UserSession) throws {
+        self.session = session
+        isAuthenticated = true
+        try persistSession(session)
     }
 
     func buttonTitle(area: GateArea, direction: GateDirection) -> String {
