@@ -177,7 +177,7 @@ struct LoginView: View {
     private var screenTitle: String {
         switch mode {
         case .login:
-            return "Шлагбаумы на Марьиной роще"
+            return "Шлагбаумы на Роще"
         case .register:
             return "Регистрация"
         case .resetPassword:
