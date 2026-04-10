@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "2600"
+   LastUpgradeVersion = "2640"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -16,7 +16,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "100000000000000000000401"
-               BuildableName = "Gate.app"
+               BuildableName = "Gate of Love.app"
                BlueprintName = "Gate"
                ReferencedContainer = "container:GateApp.xcodeproj">
             </BuildableReference>
@@ -58,7 +58,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "100000000000000000000401"
-            BuildableName = "Gate.app"
+            BuildableName = "Gate of Love.app"
             BlueprintName = "Gate"
             ReferencedContainer = "container:GateApp.xcodeproj">
          </BuildableReference>
@@ -75,7 +75,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "100000000000000000000401"
-            BuildableName = "Gate.app"
+            BuildableName = "Gate of Love.app"
             BlueprintName = "Gate"
             ReferencedContainer = "container:GateApp.xcodeproj">
          </BuildableReference>

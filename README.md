@@ -53,3 +53,13 @@ BACKEND_BASE_URL = https\\://gate-backend.housekpr.ru
 - Swift-исходники проходят `swiftc -typecheck` с iOS SDK
 
 Полный `xcodebuild test` не выполнен, потому что в установленном Xcode отсутствуют iOS simulator/device runtimes. После установки platform components в `Xcode > Settings > Components` проект можно собрать и прогнать тесты штатно.
+
+## App Store
+
+Для подготовки публичного релиза используйте:
+
+- [AppStoreReleaseChecklist.md](/Users/evgeny/Projects/ios/gate/docs/AppStoreReleaseChecklist.md)
+- [AppStoreMetadataTemplate.md](/Users/evgeny/Projects/ios/gate/docs/AppStoreMetadataTemplate.md)
+- [AppReviewNotesTemplate.md](/Users/evgeny/Projects/ios/gate/docs/AppReviewNotesTemplate.md)
+
+В репозитории подготовлена только проектная часть. Заполнение App Store Connect, privacy labels, reviewer notes, support URL и privacy policy URL нужно выполнить отдельно перед публикацией.
