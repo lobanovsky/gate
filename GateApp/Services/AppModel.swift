@@ -131,6 +131,14 @@ final class AppModel: ObservableObject {
         return !hasDevice || inFlightAction == actionID || cooldownActions.contains(actionID)
     }
 
+    func phoneURL(area: GateArea, direction: GateDirection) -> URL? {
+        GateActionID(area: area, direction: direction).telURL
+    }
+
+    func presentCallError() {
+        alert = AppAlert(title: "Не удалось начать звонок", message: "Проверьте, доступен ли телефонный вызов на этом устройстве.")
+    }
+
     private func handleAuthorizedError(_ error: Error, fallbackTitle: String) {
         if case APIError.unauthorized = error {
             logout()

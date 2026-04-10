@@ -4,6 +4,7 @@ struct GateSectionCard: View {
     let section: GateSection
     let titleForDirection: (GateDirection) -> String
     let isDisabled: (GateDirection, Bool) -> Bool
+    let onCall: (GateDirection) -> Void
     let onTap: (GateDirection) -> Void
 
     var body: some View {
@@ -24,30 +25,46 @@ struct GateSectionCard: View {
     private func actionButton(direction: GateDirection) -> some View {
         let action = section.actions[direction]
         let isButtonDisabled = isDisabled(direction, action != nil)
+        let backgroundColor = backgroundColor(for: direction)
 
-        return Button {
-            onTap(direction)
-        } label: {
-            HStack {
-                Text(titleForDirection(direction))
-                    .font(.headline)
-
-                Spacer()
-
-                Image(systemName: direction == .enter ? "arrow.down.forward.circle.fill" : "arrow.up.forward.circle.fill")
-                    .font(.system(size: 28))
+        return HStack(spacing: 10) {
+            Button {
+                onCall(direction)
+            } label: {
+                Image(systemName: "phone.fill")
+                    .font(.system(size: 22, weight: .semibold))
+                    .frame(width: 62, height: 62)
+                    .contentShape(Rectangle())
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 18)
-            .padding(.vertical, 20)
-            .contentShape(Rectangle())
+            .buttonStyle(.plain)
+            .foregroundStyle(.white)
+            .background(backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+
+            Button {
+                onTap(direction)
+            } label: {
+                HStack {
+                    Text(titleForDirection(direction))
+                        .font(.headline)
+
+                    Spacer()
+
+                    Image(systemName: direction == .enter ? "arrow.down.forward.circle.fill" : "arrow.up.forward.circle.fill")
+                        .font(.system(size: 28))
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 18)
+                .padding(.vertical, 20)
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .foregroundStyle(.white)
+            .background(backgroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .disabled(isButtonDisabled)
+            .opacity(isButtonDisabled && action == nil ? 0.55 : (isButtonDisabled ? 0.72 : 1.0))
         }
-        .buttonStyle(.plain)
-        .foregroundStyle(.white)
-        .background(backgroundColor(for: direction))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .disabled(isButtonDisabled)
-        .opacity(isButtonDisabled && action == nil ? 0.55 : (isButtonDisabled ? 0.72 : 1.0))
     }
 
     private func backgroundColor(for direction: GateDirection) -> Color {

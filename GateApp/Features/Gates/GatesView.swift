@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GatesView: View {
     @EnvironmentObject private var appModel: AppModel
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         GeometryReader { geometry in
@@ -19,6 +20,18 @@ struct GatesView: View {
                                 },
                                 isDisabled: { direction, hasDevice in
                                     appModel.isActionDisabled(area: section.area, direction: direction, hasDevice: hasDevice)
+                                },
+                                onCall: { direction in
+                                    guard let url = appModel.phoneURL(area: section.area, direction: direction) else {
+                                        appModel.presentCallError()
+                                        return
+                                    }
+
+                                    openURL(url) { accepted in
+                                        if !accepted {
+                                            appModel.presentCallError()
+                                        }
+                                    }
                                 },
                                 onTap: { direction in
                                     Task {

@@ -77,6 +77,34 @@ struct GateActionID: Hashable {
     let direction: GateDirection
 }
 
+extension GateActionID {
+    var phoneNumber: String {
+        switch (area, direction) {
+        case (.courtyard, .enter):
+            return "+7-903-178-51-52"
+        case (.courtyard, .exit):
+            return "+7-903-775-86-56"
+        case (.parking, .enter):
+            return "+7-926-704-96-48‬"
+        case (.parking, .exit):
+            return "+7-926-704-97-09"
+        }
+    }
+
+    var telURL: URL? {
+        var normalized = phoneNumber.filter { character in
+            character.isWholeNumber || character == "+"
+        }
+
+        if normalized.first != "+", !normalized.isEmpty {
+            normalized = "+" + normalized
+        }
+
+        guard !normalized.isEmpty else { return nil }
+        return URL(string: "tel:\(normalized)")
+    }
+}
+
 struct APIErrorResponse: Decodable {
     let error: String?
     let message: String?
