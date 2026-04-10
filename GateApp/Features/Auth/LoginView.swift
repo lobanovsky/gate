@@ -61,12 +61,13 @@ struct LoginView: View {
         VStack(spacing: 16) {
             TextField("Email", text: $email)
                 .keyboardType(.emailAddress)
+                .textContentType(.username)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .authFieldStyle()
 
-            SecureField("Пароль", text: passwordBinding)
-                .keyboardType(.numberPad)
+            SecureField("Пароль", text: $password)
+                .textContentType(.password)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .authFieldStyle()
@@ -79,7 +80,7 @@ struct LoginView: View {
                 actionLabel(title: "Войти")
             }
             .buttonStyle(.borderedProminent)
-            .disabled(appModel.isBusy || !isValidEmail(email) || !isValidPin(password))
+            .disabled(appModel.isBusy || !isValidEmail(email) || password.isEmpty)
 
             HStack {
                 Button("Регистрация") {
@@ -107,6 +108,7 @@ struct LoginView: View {
         VStack(spacing: 16) {
             TextField("Email", text: $registrationEmail)
                 .keyboardType(.emailAddress)
+                .textContentType(.emailAddress)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .authFieldStyle()
@@ -145,6 +147,7 @@ struct LoginView: View {
         VStack(spacing: 16) {
             TextField("Email", text: $recoveryEmail)
                 .keyboardType(.emailAddress)
+                .textContentType(.emailAddress)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .authFieldStyle()
@@ -185,15 +188,6 @@ struct LoginView: View {
         }
     }
 
-    private var passwordBinding: Binding<String> {
-        Binding(
-            get: { password },
-            set: { newValue in
-                password = String(newValue.filter(\.isWholeNumber).prefix(4))
-            }
-        )
-    }
-
     private var registrationPhoneBinding: Binding<String> {
         Binding(
             get: { registrationPhone },
@@ -221,10 +215,6 @@ struct LoginView: View {
         let trimmed = value.trimmingCharacters(in: .whitespacesAndNewlines)
         let regex = #"^[A-Z0-9a-z._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$"#
         return trimmed.range(of: regex, options: .regularExpression) != nil
-    }
-
-    private func isValidPin(_ value: String) -> Bool {
-        value.count == 4 && value.allSatisfy(\.isWholeNumber)
     }
 
     private func isValidRussianPhone(_ value: String) -> Bool {
