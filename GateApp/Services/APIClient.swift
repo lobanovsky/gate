@@ -13,6 +13,7 @@ struct APIClient {
             method: "POST",
             body: credentials,
             token: nil,
+            authorizationBehavior: .publicAuth,
             responseType: UserSession.self
         )
     }
@@ -23,6 +24,7 @@ struct APIClient {
             method: "POST",
             body: payload,
             token: nil,
+            authorizationBehavior: .publicAuth,
             responseType: RegistrationResponse.self
         )
     }
@@ -33,6 +35,7 @@ struct APIClient {
             method: "POST",
             body: RecoverPasswordPayload(email: email),
             token: nil,
+            authorizationBehavior: .publicAuth,
             responseType: MessageResponse.self
         )
     }
@@ -43,6 +46,7 @@ struct APIClient {
             method: "GET",
             body: Optional<String>.none,
             token: token,
+            authorizationBehavior: .privateAuthorized,
             responseType: UserDevices.self
         )
     }
@@ -58,6 +62,7 @@ struct APIClient {
             method: "POST",
             body: OpenPayload(key: device.deviceKey, userid: userId),
             token: token,
+            authorizationBehavior: .privateAuthorized,
             responseType: EmptyResponse.self
         )
     }
@@ -67,6 +72,7 @@ struct APIClient {
         method: String,
         body: RequestBody?,
         token: String?,
+        authorizationBehavior: AuthorizationBehavior,
         responseType: ResponseBody.Type
     ) async throws -> ResponseBody {
         guard let baseURL = AppConfiguration.backendBaseURL else {
@@ -101,13 +107,17 @@ struct APIClient {
                 }
                 return try JSONDecoder().decode(ResponseBody.self, from: data)
             case 401, 403:
-                throw APIError.unauthorized
+                if authorizationBehavior == .privateAuthorized {
+                    throw APIError.unauthorized
+                }
+
+                if let message = extractErrorMessage(from: data) {
+                    throw APIError.serverError(message)
+                }
+
+                throw APIError.serverError("Ошибка сервера: \(httpResponse.statusCode)")
             default:
-                if
-                    let errorResponse = try? JSONDecoder().decode(APIErrorResponse.self, from: data),
-                    let message = errorResponse.error ?? errorResponse.message,
-                    !message.isEmpty
-                {
+                if let message = extractErrorMessage(from: data) {
                     throw APIError.serverError(message)
                 }
 
@@ -119,6 +129,30 @@ struct APIClient {
             throw APIError.transport(error.localizedDescription)
         }
     }
+
+    private func extractErrorMessage(from data: Data) -> String? {
+        if
+            let errorResponse = try? JSONDecoder().decode(APIErrorResponse.self, from: data),
+            let message = errorResponse.error ?? errorResponse.message,
+            !message.isEmpty
+        {
+            return message
+        }
+
+        if let rawMessage = String(data: data, encoding: .utf8)?
+            .trimmingCharacters(in: .whitespacesAndNewlines),
+           !rawMessage.isEmpty
+        {
+            return rawMessage
+        }
+
+        return nil
+    }
 }
 
 private struct EmptyResponse: Decodable {}
+
+private enum AuthorizationBehavior {
+    case publicAuth
+    case privateAuthorized
+}

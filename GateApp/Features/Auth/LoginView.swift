@@ -21,7 +21,7 @@ struct LoginView: View {
             Spacer()
 
             VStack(spacing: 12) {
-                Text("Шлагбаумы на Марьиной роще")
+                Text(screenTitle)
                     .font(.system(size: 34, weight: .bold))
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
@@ -65,7 +65,8 @@ struct LoginView: View {
                 .autocorrectionDisabled()
                 .authFieldStyle()
 
-            SecureField("Пароль", text: $password)
+            SecureField("Пароль", text: passwordBinding)
+                .keyboardType(.numberPad)
                 .textInputAutocapitalization(.never)
                 .autocorrectionDisabled()
                 .authFieldStyle()
@@ -78,14 +79,17 @@ struct LoginView: View {
                 actionLabel(title: "Войти")
             }
             .buttonStyle(.borderedProminent)
-            .disabled(appModel.isBusy || email.isEmpty || password.isEmpty)
+            .disabled(appModel.isBusy || !isValidEmail(email) || !isValidPin(password))
 
-            VStack(spacing: 10) {
+            HStack {
                 Button("Регистрация") {
+                    registrationEmail = email
                     mode = .register
                 }
                 .buttonStyle(.plain)
                 .foregroundStyle(.blue)
+
+                Spacer()
 
                 Button("Забыли пароль?") {
                     recoveryEmail = email
@@ -117,7 +121,7 @@ struct LoginView: View {
                 Task {
                     _ = await appModel.register(
                         email: registrationEmail,
-                        phoneNumber: registrationPhone.replacingOccurrences(of: " ", with: "")
+                        phoneNumber: normalizedPhoneNumber(from: registrationPhone)
                     )
                 }
             } label: {
@@ -170,6 +174,26 @@ struct LoginView: View {
         }
     }
 
+    private var screenTitle: String {
+        switch mode {
+        case .login:
+            return "Шлагбаумы на Марьиной роще"
+        case .register:
+            return "Регистрация"
+        case .resetPassword:
+            return "Восстановления пароля"
+        }
+    }
+
+    private var passwordBinding: Binding<String> {
+        Binding(
+            get: { password },
+            set: { newValue in
+                password = String(newValue.filter(\.isWholeNumber).prefix(4))
+            }
+        )
+    }
+
     private var registrationPhoneBinding: Binding<String> {
         Binding(
             get: { registrationPhone },
@@ -199,48 +223,48 @@ struct LoginView: View {
         return trimmed.range(of: regex, options: .regularExpression) != nil
     }
 
-    private func isValidRussianPhone(_ value: String) -> Bool {
-        let digits = value.filter(\.isWholeNumber)
-        return digits.count == 11 && digits.first == "7"
+    private func isValidPin(_ value: String) -> Bool {
+        value.count == 4 && value.allSatisfy(\.isWholeNumber)
     }
 
-    private func formatRussianPhone(_ value: String) -> String {
+    private func isValidRussianPhone(_ value: String) -> Bool {
+        value == formatRussianPhone(value) && normalizedPhoneNumber(from: value).count == 11
+    }
+
+    private func normalizedPhoneNumber(from value: String) -> String {
         var digits = value.filter(\.isWholeNumber)
-
-        guard !digits.isEmpty else { return "" }
-
         if digits.hasPrefix("8") {
             digits.removeFirst()
             digits = "7" + digits
-        } else if !digits.hasPrefix("7") {
+        } else if !digits.hasPrefix("7"), !digits.isEmpty {
             digits = "7" + digits
         }
+        return String(digits.prefix(11))
+    }
 
-        digits = String(digits.prefix(11))
-        let numbers = String(digits.dropFirst())
+    private func formatRussianPhone(_ value: String) -> String {
+        let normalizedDigits = normalizedPhoneNumber(from: value)
+        let numbers = String(normalizedDigits.dropFirst())
 
         var result = "+7"
-        if !numbers.isEmpty {
-            result += "("
-            result += String(numbers.prefix(3))
-        }
-        if numbers.count >= 3 {
-            result += ")"
-        }
+        result += "("
+        result += String(numbers.prefix(3))
+
+        if numbers.count >= 3 { result += ")" }
         if numbers.count > 3 {
             let start = numbers.index(numbers.startIndex, offsetBy: 3)
             let end = numbers.index(start, offsetBy: min(3, numbers.distance(from: start, to: numbers.endIndex)))
-            result += " " + numbers[start..<end]
+            result += numbers[start..<end]
         }
         if numbers.count > 6 {
             let start = numbers.index(numbers.startIndex, offsetBy: 6)
             let end = numbers.index(start, offsetBy: min(2, numbers.distance(from: start, to: numbers.endIndex)))
-            result += " " + numbers[start..<end]
+            result += "-" + numbers[start..<end]
         }
         if numbers.count > 8 {
             let start = numbers.index(numbers.startIndex, offsetBy: 8)
             let end = numbers.index(start, offsetBy: min(2, numbers.distance(from: start, to: numbers.endIndex)))
-            result += " " + numbers[start..<end]
+            result += "-" + numbers[start..<end]
         }
 
         return result
