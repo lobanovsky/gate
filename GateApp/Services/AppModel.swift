@@ -136,7 +136,7 @@ final class AppModel: ObservableObject {
     }
 
     func loadDevices() async {
-        guard let session else { return }
+        guard let session, !isLoadingDevices else { return }
 
         isLoadingDevices = true
         defer { isLoadingDevices = false }
@@ -145,6 +145,8 @@ final class AppModel: ObservableObject {
             let devices = try await apiClient.fetchDevices(token: session.token)
             userDevices = devices
             sections = GateLayoutBuilder.build(from: devices)
+        } catch is CancellationError {
+            return
         } catch {
             handleAuthorizedError(error, fallbackTitle: "Не удалось загрузить устройства")
         }

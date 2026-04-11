@@ -123,6 +123,10 @@ struct APIClient {
 
                 throw APIError.serverError("Ошибка сервера: \(httpResponse.statusCode)")
             }
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch let error as APIError {
             throw error
         } catch {
