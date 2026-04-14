@@ -54,15 +54,18 @@ struct GatesView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button("Выйти") {
+                Button {
                     appModel.logout()
+                } label: {
+                    Image(systemName: "rectangle.portrait.and.arrow.right")
                 }
+                .accessibilityLabel("Выйти")
             }
 
             ToolbarItem(placement: .principal) {
-                Link("Сделано в Бюро Лобановского", destination: URL(string: "https://www.lobanovsky.ru")!)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                Link("☕ Поблагодарить разработчика", destination: URL(string: "https://tbank.ru/cf/8ccZXC5ZbA3")!)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.orange)
             }
 
             ToolbarItem(placement: .topBarTrailing) {
