@@ -63,7 +63,7 @@ struct GatesView: View {
             }
 
             ToolbarItem(placement: .principal) {
-                Link("☕ Поблагодарить разработчика", destination: URL(string: "https://tbank.ru/cf/8ccZXC5ZbA3")!)
+                Link("Сделано в Бюро Лобановского", destination: URL(string: "https://www.lobanovsky.ru")!)
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.orange)
             }
