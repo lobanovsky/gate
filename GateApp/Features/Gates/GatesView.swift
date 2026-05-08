@@ -1,8 +1,10 @@
 import SwiftUI
+import AudioToolbox
 
 struct GatesView: View {
     @EnvironmentObject private var appModel: AppModel
     @Environment(\.openURL) private var openURL
+    @AppStorage("gate.sound.enabled") private var isSoundEnabled = true
 
     var body: some View {
         GeometryReader { geometry in
@@ -37,6 +39,7 @@ struct GatesView: View {
                                     }
                                 },
                                 onTap: { direction in
+                                    if isSoundEnabled { playActionSound() }
                                     Task {
                                         await appModel.open(section: section.area, direction: direction)
                                     }
@@ -70,6 +73,15 @@ struct GatesView: View {
 
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
+                    isSoundEnabled.toggle()
+                } label: {
+                    Image(systemName: isSoundEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
+                }
+                .accessibilityLabel(isSoundEnabled ? "Выключить звук" : "Включить звук")
+            }
+
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
                     Task {
                         await appModel.loadDevices()
                     }
@@ -86,5 +98,9 @@ struct GatesView: View {
         .refreshable {
             await appModel.loadDevices()
         }
+    }
+
+    private func playActionSound() {
+        AudioServicesPlaySystemSound(1057)
     }
 }
